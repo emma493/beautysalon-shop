@@ -1,0 +1,70 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
+
+@variant dark (&:where(.dark, .dark *));
+
+/*
+  Salon design system
+  --------------------
+  One brand family (a refined orchid/plum) replaces the previous mix of
+  ad-hoc greens, navys and indigos. A muted gold is reserved for a single
+  "premium" signature accent. Status colors (emerald/amber/rose) are kept
+  as-is since they already carry consistent meaning (success/warning/danger).
+*/
+@theme {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+
+  --color-brand-50: #F7F1FA;
+  --color-brand-100: #EEE1F5;
+  --color-brand-200: #DBC4EA;
+  --color-brand-300: #C29FDA;
+  --color-brand-400: #A578C4;
+  --color-brand-500: #8656A8;
+  --color-brand-600: #6B3F8C;
+  --color-brand-700: #553170;
+  --color-brand-800: #402654;
+  --color-brand-900: #2B1938;
+  --color-brand-950: #190E20;
+
+  --color-gold-50: #FBF6EA;
+  --color-gold-100: #F5EAD0;
+  --color-gold-200: #EAD59F;
+  --color-gold-300: #DDBB78;
+  --color-gold-400: #C9A455;
+  --color-gold-500: #A9873F;
+  --color-gold-600: #8C6D2F;
+  --color-gold-700: #6E5322;
+  --color-gold-800: #4A3818;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-200);
+    color: var(--color-brand-900);
+  }
+}
+
+@layer components {
+  /* Shared "signature" underline used beneath page/section titles app-wide */
+  .brand-title-rule {
+    position: relative;
+    display: inline-block;
+  }
+  .brand-title-rule::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    height: 3px;
+    width: 32px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--color-brand-600), var(--color-gold-400));
+  }
+}
+

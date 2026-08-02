@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /login
+Disallow: /worker
+Disallow: /api/
+Allow: /
+
+Sitemap: https://beautysalon-shop.netlify.app/sitemap.xml

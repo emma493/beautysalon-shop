@@ -1,0 +1,112 @@
+{
+  "entities": {
+    "settings": {
+      "fields": {
+        "shopName": { "type": "string" },
+        "companyLogoUrl": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "address": { "type": "string" },
+        "companyPhone": { "type": "string" },
+        "companyEmail": { "type": "string" },
+        "companyAddress": { "type": "string" },
+        "currency": { "type": "string" },
+        "currencyCode": { "type": "string" },
+        "adminEmail": { "type": "string" },
+        "shiftSchedule": { "type": "string" },
+        "shiftStartTime": { "type": "string" },
+        "shiftEndTime": { "type": "string" },
+        "shiftEnabled": { "type": "boolean" }
+      }
+    },
+    "products": {
+      "fields": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "costPrice": { "type": "number" },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "location": { "type": "string" },
+        "barcode": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      }
+    },
+    "categories": {
+      "fields": {
+        "name": { "type": "string" }
+      }
+    },
+    "storeLocations": {
+      "fields": {
+        "name": { "type": "string" }
+      }
+    },
+    "orders": {
+      "fields": {
+        "orderNumber": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "items": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "paymentStatus": { "type": "string" },
+        "fulfilledBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "workers": {
+      "fields": {
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "otherNames": { "type": "string" },
+        "email": { "type": "string" },
+        "password": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "ghanaCardId": { "type": "string" },
+        "location": { "type": "string" },
+        "dateOfEmployment": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "role": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    },
+    "announcements": {
+      "fields": {
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "targetUserIds": { "type": "array" },
+        "scheduledFor": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "notes": {
+      "fields": {
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "feedbackMessages": {
+      "fields": {
+        "workerId": { "type": "string" },
+        "workerName": { "type": "string" },
+        "senderRole": { "type": "string" },
+        "message": { "type": "string" },
+        "attachmentUrl": { "type": "string" },
+        "attachmentType": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "logs": {
+      "fields": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "role": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "date": { "type": "string" }
+      }
+    }
+  }
+}
