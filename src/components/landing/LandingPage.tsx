@@ -230,47 +230,56 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* Pricing Plan Section */}
-      <section id="pricing" className="py-20 bg-slate-900/50 border-y border-slate-800/80 relative">
+      <section id="pricing" className="py-20 bg-slate-900/40 border-y border-slate-800/80 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-400 text-xs font-extrabold uppercase tracking-wider">
-              Flexible Enterprise Subscription
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-emerald-400 text-xs font-extrabold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+              <span>Simple, Transparent Pricing</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-              One Transparent Plan for Every Funeral & Social Enterprise
+              One Flat Rate for Complete Enterprise Power
             </h2>
-            <p className="text-slate-400 text-sm font-medium">
-              Start with a 1 Month Free Trial. Each company receives a dedicated, isolated Firestore database and custom Cloudflare Pages portal URL.
+            <p className="text-slate-400 text-sm sm:text-base font-medium">
+              Start with a 1 Month Free Trial. Everything you need to manage products, staff, transactions, and company operations seamlessly.
             </p>
           </div>
 
-          {/* Pricing Card */}
-          <div className="max-w-xl mx-auto bg-slate-950 rounded-3xl border-2 border-brand-500/40 p-8 sm:p-10 shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 bg-gradient-to-l from-brand-600 to-emerald-600 text-white font-black text-[11px] uppercase tracking-wider px-6 py-1.5 rounded-bl-2xl shadow-lg">
+          {/* Professional SaaS Pricing Card */}
+          <div className="max-w-lg mx-auto bg-slate-950 rounded-3xl border-2 border-brand-500/40 p-8 sm:p-10 shadow-2xl relative overflow-hidden group hover:border-brand-500/70 transition-all duration-300">
+            {/* Top Badge */}
+            <div className="absolute top-0 right-0 bg-gradient-to-l from-brand-600 to-emerald-600 text-white font-black text-[11px] uppercase tracking-wider px-6 py-2 rounded-bl-2xl shadow-md">
               1 Month Free Trial
             </div>
 
             <div className="space-y-6">
               <div>
                 <h3 className="text-2xl font-black text-white flex items-center gap-2">
-                  <span>Socialfunera Enterprise</span>
+                  <span>Socialfunera Professional</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">Full access to all multi-tenant portal modules for 30 days</p>
+                <p className="text-xs text-slate-400 mt-1">Full access to all management features for your entire team</p>
               </div>
 
-              <div className="flex items-baseline gap-2 pb-6 border-b border-slate-800">
-                <span className="text-5xl font-black text-white">$0</span>
-                <span className="text-sm font-bold text-emerald-400">/ first month</span>
-                <span className="text-xs text-slate-500 ml-auto">Billing starts after 30 days</span>
+              {/* Price Display */}
+              <div className="flex items-baseline gap-2 pb-6 border-b border-slate-800/80">
+                <span className="text-4xl sm:text-5xl font-black text-white tracking-tight">GH₵200</span>
+                <span className="text-sm font-bold text-slate-400">/ month</span>
+                <span className="text-xs text-emerald-400 font-bold ml-auto px-2.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-800/60">
+                  1 Month Free Trial
+                </span>
               </div>
 
-              {/* Pricing Itemized Specs */}
-              <div className="space-y-3.5">
+              <div className="text-xs text-slate-400 -mt-2 font-medium">
+                GH₵0 for the first 30 days. Cancel anytime before trial ends.
+              </div>
+
+              {/* Clean Pricing Specs List */}
+              <div className="space-y-4 pt-2">
                 <div className="flex items-start gap-3 text-xs font-semibold text-slate-200">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <strong className="text-white font-bold">1 Month Free Trial</strong>
-                    <p className="text-[11px] text-slate-400">Zero charges during your first 30 days of operation</p>
+                    <p className="text-[11px] text-slate-400">Full unlimited access for 30 days with zero upfront commitment</p>
                   </div>
                 </div>
 
@@ -278,7 +287,7 @@ export const LandingPage: React.FC = () => {
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <strong className="text-white font-bold">Add Unlimited Workers</strong>
-                    <p className="text-[11px] text-slate-400">Create staff logins for directors, handlers, and sales representatives</p>
+                    <p className="text-[11px] text-slate-400">Create staff logins for directors, managers, handlers, and cashiers</p>
                   </div>
                 </div>
 
@@ -286,7 +295,7 @@ export const LandingPage: React.FC = () => {
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <strong className="text-white font-bold">Add Unlimited Products & Services</strong>
-                    <p className="text-[11px] text-slate-400">Caskets, floral tributes, venue packages, transport, and memorial items</p>
+                    <p className="text-[11px] text-slate-400">Manage caskets, floral arrangements, venue packages, & memorial items</p>
                   </div>
                 </div>
 
@@ -294,50 +303,59 @@ export const LandingPage: React.FC = () => {
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <strong className="text-white font-bold">Process Unlimited Transactions Per Day</strong>
-                    <p className="text-[11px] text-slate-400">High-capacity Point of Sale invoicing with PDF & thermal receipt downloads</p>
+                    <p className="text-[11px] text-slate-400">High-capacity Point of Sale invoicing and sales record tracking</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 text-xs font-semibold text-slate-200">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-white font-bold">Isolated Dedicated Firestore Database</strong>
-                    <p className="text-[11px] text-slate-400">Your company data is strictly stored in its own separate database</p>
+                    <strong className="text-white font-bold">POS Sales & Invoicing Receipts</strong>
+                    <p className="text-[11px] text-slate-400">Generate downloadable PDF invoices and printable thermal receipts</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 text-xs font-semibold text-slate-200">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-white font-bold">Cloudinary Image Upload Integration</strong>
-                    <p className="text-[11px] text-slate-400">Direct image hosting for company logo and product galleries</p>
+                    <strong className="text-white font-bold">Multi-Currency & Custom Branding</strong>
+                    <p className="text-[11px] text-slate-400">Configure GHS, USD, EUR, or local currency with custom company logo</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 text-xs font-semibold text-slate-200">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-white font-bold">Annual Offline Snapshot & System Reset</strong>
-                    <p className="text-[11px] text-slate-400">Dec 31st standalone HTML offline archive download and fiscal reset</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 text-xs font-semibold text-slate-200">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <div>
-                    <strong className="text-white font-bold">Advanced Date Range Filtering</strong>
-                    <p className="text-[11px] text-slate-400">Filter sales by Today, Yesterday, Specific Date, or Custom Date Ranges</p>
+                    <strong className="text-white font-bold">Role-Based Access Control</strong>
+                    <p className="text-[11px] text-slate-400">Secure Admin vs. Worker views to safeguard sensitive company finances</p>
                   </div>
                 </div>
               </div>
 
+              {/* Action Button */}
               <button
                 onClick={handleOpenForm}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-black text-sm shadow-xl shadow-brand-600/30 transition cursor-pointer flex items-center justify-center gap-2 mt-4"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-brand-600 via-emerald-600 to-teal-500 hover:opacity-95 text-white font-black text-sm shadow-xl shadow-brand-600/30 transition cursor-pointer flex items-center justify-center gap-2 mt-4"
               >
-                <span>Select Plan & Start Free Trial</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Start 1 Month Free Trial</span>
+                <ArrowRight className="w-4 h-4 text-emerald-200" />
               </button>
+            </div>
+          </div>
+
+          {/* Trust Badges under Pricing */}
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-slate-400 text-xs font-semibold">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>256-Bit SSL Encryption</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-amber-400" />
+              <span>99.9% Uptime Guarantee</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-cyan-400" />
+              <span>Instant Cloud Activation</span>
             </div>
           </div>
         </div>
@@ -349,66 +367,88 @@ export const LandingPage: React.FC = () => {
           <div>
             <h2 className="text-2xl sm:text-3xl font-black text-white">Active Company Portals</h2>
             <p className="text-xs sm:text-sm text-slate-400 font-medium">
-              Select any company portal to enter its dedicated workspace with separate Firestore database storage.
+              Select any company portal below to launch its dedicated management workspace.
             </p>
           </div>
 
           <button
             onClick={handleOpenForm}
-            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 flex items-center gap-2 cursor-pointer shrink-0"
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-xs shadow-md flex items-center gap-2 cursor-pointer shrink-0"
           >
-            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <Sparkles className="w-4 h-4 text-emerald-300" />
             <span>Onboard New Company</span>
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tenants.map((t) => (
-            <div
-              key={t.id}
-              className="bg-slate-900/80 rounded-2xl border border-slate-800 p-6 flex flex-col justify-between space-y-4 hover:border-brand-500/50 transition group"
-            >
-              <div className="flex items-start gap-4">
-                <img
-                  src={t.logoUrl}
-                  alt={t.companyName}
-                  className="w-14 h-14 rounded-2xl object-cover border border-slate-700 shadow-md shrink-0 bg-slate-800"
-                />
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-bold text-white truncate group-hover:text-emerald-400 transition">
-                    {t.companyName}
-                  </h3>
-                  <p className="text-xs text-slate-400 font-mono mt-0.5 truncate">
-                    DB: {t.databaseId}
-                  </p>
-                  <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 text-[10px] font-bold border border-emerald-800/60">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                    <span>Trial Active • {t.currencyCode}</span>
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-1 text-xs text-slate-400 border-t border-slate-800/80 pt-3 font-medium">
-                <div className="flex items-center gap-2 truncate">
-                  <Phone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                  <span className="truncate">{t.phone}</span>
-                </div>
-                <div className="flex items-center gap-2 truncate">
-                  <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                  <span className="truncate">{t.address}</span>
-                </div>
-              </div>
-
-              <button
-                onClick={() => switchTenant(t.id)}
-                className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-brand-600 text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-              >
-                <span>Launch Dedicated Portal</span>
-                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-white" />
-              </button>
+        {tenants.length === 0 ? (
+          /* Empty Directory State */
+          <div className="bg-slate-900/60 rounded-3xl border border-slate-800 p-12 text-center max-w-2xl mx-auto space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto text-slate-400">
+              <Building2 className="w-8 h-8 text-emerald-400" />
             </div>
-          ))}
-        </div>
+            <div className="space-y-1">
+              <h3 className="text-lg font-bold text-white">No Company Portals Registered Yet</h3>
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
+                Be the first company to onboard! Provision your custom portal with a 1 month free trial and GH₵200/month plan.
+              </p>
+            </div>
+            <button
+              onClick={handleOpenForm}
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-extrabold text-xs shadow-lg transition cursor-pointer inline-flex items-center gap-2"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-300" />
+              <span>Onboard Your Company Now</span>
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tenants.map((t) => (
+              <div
+                key={t.id}
+                className="bg-slate-900/80 rounded-2xl border border-slate-800 p-6 flex flex-col justify-between space-y-4 hover:border-brand-500/50 transition group"
+              >
+                <div className="flex items-start gap-4">
+                  <img
+                    src={t.logoUrl}
+                    alt={t.companyName}
+                    className="w-14 h-14 rounded-2xl object-cover border border-slate-700 shadow-md shrink-0 bg-slate-800"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-base font-bold text-white truncate group-hover:text-emerald-400 transition">
+                      {t.companyName}
+                    </h3>
+                    <p className="text-xs text-slate-400 font-mono mt-0.5 truncate">
+                      DB: {t.databaseId}
+                    </p>
+                    <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 text-[10px] font-bold border border-emerald-800/60">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                      <span>Trial Active • {t.currencyCode}</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-1 text-xs text-slate-400 border-t border-slate-800/80 pt-3 font-medium">
+                  <div className="flex items-center gap-2 truncate">
+                    <Phone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <span className="truncate">{t.phone}</span>
+                  </div>
+                  <div className="flex items-center gap-2 truncate">
+                    <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <span className="truncate">{t.address}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => switchTenant(t.id)}
+                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-brand-600 text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <span>Launch Dedicated Portal</span>
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-white" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Footer */}

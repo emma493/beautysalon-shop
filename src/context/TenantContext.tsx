@@ -22,23 +22,6 @@ interface TenantContextType {
   getTenantUrl: (tenant: Tenant) => string;
 }
 
-const DEFAULT_DEMO_TENANT: Tenant = {
-  id: 'socialfunera-demo',
-  companyName: 'Socialfunera Care Systems',
-  logoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=200&auto=format&fit=crop&q=80',
-  currency: 'GHS',
-  currencyCode: 'GHS',
-  phone: '+233 54 285 9612',
-  address: 'Accra Memorial Avenue, Ghana',
-  email: 'admin@socialfunera.com',
-  adminPasswordHash: 'admin123',
-  databaseId: 'sf-db-socialfunera-demo',
-  createdAt: new Date().toISOString(),
-  trialEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-  customUrl: 'https://socialfunera.pages.dev/?tenant=socialfunera-demo',
-  isTrialActive: true,
-};
-
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
 const TENANTS_STORAGE_KEY = 'socialfunera_tenants_registry_v1';
@@ -50,12 +33,12 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       const saved = localStorage.getItem(TENANTS_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {
       console.error('Failed to parse tenants registry:', e);
     }
-    return [DEFAULT_DEMO_TENANT];
+    return [];
   });
 
   const [currentTenantId, setCurrentTenantId] = useState<string | null>(() => {

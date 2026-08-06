@@ -119,6 +119,13 @@ export const AdminBilling: React.FC = () => {
 
           <div className="space-y-3 text-xs font-medium text-slate-700 dark:text-slate-300">
             <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500">Subscription Rate</span>
+              <span className="font-bold text-slate-900 dark:text-white">
+                GH₵200 / month (1 Month Free Trial)
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
               <span className="text-slate-500">Database ID</span>
               <span className="font-mono font-bold text-slate-900 dark:text-white">
                 {currentTenant?.databaseId || 'sf-db-main'}
@@ -138,11 +145,6 @@ export const AdminBilling: React.FC = () => {
             <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
               <span className="text-slate-500">Daily POS Capacity</span>
               <span className="font-bold text-emerald-600 dark:text-emerald-400">Unlimited Transactions</span>
-            </div>
-
-            <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-slate-500">Offline Snapshot Engine</span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">Included (Dec 31st)</span>
             </div>
           </div>
         </div>
