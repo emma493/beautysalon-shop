@@ -135,4 +135,17 @@ export interface SystemSettings {
   shiftStartTime?: string; // e.g. "07:00"
   shiftEndTime?: string; // e.g. "19:00"
   shiftEnabled?: boolean;
+  trialStartDate?: string; // ISO date string when trial started upon first product creation
+  lastPaidDate?: string;   // ISO date string of last successful payment
+  lastPaidMonth?: string;  // e.g. "2026-08"
+}
+
+export interface SubscriptionStatus {
+  isTrialStarted: boolean;
+  isTrialActive: boolean;
+  trialDaysLeft: number;
+  trialEndDate: Date | null;
+  isPaidForCurrentPeriod: boolean;
+  isBillingError: boolean;
+  billingErrorMessage: string;
 }

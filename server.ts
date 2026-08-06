@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 import { createServer as createViteServer } from 'vite';
 
 dotenv.config();
@@ -14,7 +15,7 @@ const PAYSTACK_SECRET_KEY =
 const PAYSTACK_PUBLIC_KEY =
   process.env.PAYSTACK_PUBLIC_KEY || '';
 const PAYSTACK_PLAN_CODE =
-  process.env.PAYSTACK_PLAN_CODE || 'PLN_qnn0395op4uzo4d';
+  process.env.PAYSTACK_PLAN_CODE || '';
 
 async function startServer() {
   const app = express();
@@ -24,10 +25,16 @@ async function startServer() {
 
   // API Config endpoint
   app.get('/api/paystack/config', (_req, res) => {
+    const isConfigured = Boolean(
+      PAYSTACK_SECRET_KEY &&
+        PAYSTACK_SECRET_KEY.trim().length > 0 &&
+        !PAYSTACK_SECRET_KEY.includes('placeholder')
+    );
     res.json({
       publicKey: PAYSTACK_PUBLIC_KEY,
       planCode: PAYSTACK_PLAN_CODE,
       amountGhs: 200,
+      isConfigured,
     });
   });
 
@@ -36,38 +43,69 @@ async function startServer() {
     try {
       const { email, phone, amount } = req.body;
       const chargeAmount = (amount || 200) * 100; // in pesewas
+      const customerEmail = email || `momo_${phone || 'guest'}@paystack.local`;
 
-      const response = await fetch('https://api.paystack.co/transaction/initialize', {
+      if (!PAYSTACK_SECRET_KEY || PAYSTACK_SECRET_KEY.includes('placeholder')) {
+        return res.status(400).json({
+          status: false,
+          message: 'Paystack Secret Key (PAYSTACK_SECRET_KEY) is not configured in environment variables.',
+        });
+      }
+
+      const payload: any = {
+        email: customerEmail,
+        amount: chargeAmount,
+        currency: 'GHS',
+        channels: ['mobile_money', 'card'],
+        metadata: {
+          mobile_number: phone,
+          provider: 'Mobile Money',
+          custom_fields: [
+            {
+              display_name: 'Mobile Number',
+              variable_name: 'mobile_number',
+              value: phone,
+            },
+          ],
+        },
+      };
+
+      if (PAYSTACK_PLAN_CODE) {
+        payload.plan = PAYSTACK_PLAN_CODE;
+      }
+
+      let response = await fetch('https://api.paystack.co/transaction/initialize', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          email: email || `momo_${phone || 'guest'}@mtnmomo.gh`,
-          amount: chargeAmount,
-          currency: 'GHS',
-          plan: PAYSTACK_PLAN_CODE,
-          channels: ['mobile_money'],
-          metadata: {
-            mobile_number: phone,
-            provider: 'MTN Mobile Money',
-            custom_fields: [
-              {
-                display_name: 'Mobile Number',
-                variable_name: 'mobile_number',
-                value: phone,
-              },
-            ],
-          },
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      let data = await response.json();
+
+      // If plan fails (e.g. plan code not found on Paystack account), retry without plan
+      if (!data.status && PAYSTACK_PLAN_CODE && data.message?.toLowerCase().includes('plan')) {
+        delete payload.plan;
+        response = await fetch('https://api.paystack.co/transaction/initialize', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        data = await response.json();
+      }
+
       res.json(data);
     } catch (error: any) {
       console.error('Paystack Initialize Error:', error);
-      res.status(500).json({ status: false, message: error.message || 'Failed to initialize Paystack transaction' });
+      res.status(500).json({
+        status: false,
+        message: error.message || 'Failed to initialize Paystack transaction',
+      });
     }
   });
 
@@ -78,6 +116,13 @@ async function startServer() {
       const cleanPhone = (phone || '').replace(/\s+/g, '');
       const chargeAmount = (amount || 200) * 100;
 
+      if (!PAYSTACK_SECRET_KEY || PAYSTACK_SECRET_KEY.includes('placeholder')) {
+        return res.status(400).json({
+          status: false,
+          message: 'Paystack Secret Key is missing in environment variables.',
+        });
+      }
+
       const response = await fetch('https://api.paystack.co/charge', {
         method: 'POST',
         headers: {
@@ -85,7 +130,7 @@ async function startServer() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email || `momo_${cleanPhone}@mtnmomo.gh`,
+          email: email || `momo_${cleanPhone}@paystack.local`,
           amount: chargeAmount.toString(),
           currency: 'GHS',
           plan: PAYSTACK_PLAN_CODE,
@@ -100,7 +145,10 @@ async function startServer() {
       res.json(data);
     } catch (error: any) {
       console.error('Paystack Charge Error:', error);
-      res.status(500).json({ status: false, message: error.message || 'Failed to trigger MoMo charge' });
+      res.status(500).json({
+        status: false,
+        message: error.message || 'Failed to trigger Mobile Money charge',
+      });
     }
   });
 
@@ -108,6 +156,14 @@ async function startServer() {
   app.get('/api/paystack/verify/:reference', async (req, res) => {
     try {
       const { reference } = req.params;
+
+      if (!PAYSTACK_SECRET_KEY || PAYSTACK_SECRET_KEY.includes('placeholder')) {
+        return res.status(400).json({
+          status: false,
+          message: 'Paystack Secret Key is not configured.',
+        });
+      }
+
       const response = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
         method: 'GET',
         headers: {
@@ -119,13 +175,24 @@ async function startServer() {
       res.json(data);
     } catch (error: any) {
       console.error('Paystack Verify Error:', error);
-      res.status(500).json({ status: false, message: error.message || 'Failed to verify Paystack transaction' });
+      res.status(500).json({
+        status: false,
+        message: error.message || 'Failed to verify Paystack transaction',
+      });
     }
   });
 
   // Fetch Live Paystack Transactions Endpoint
   app.get('/api/paystack/transactions', async (_req, res) => {
     try {
+      if (!PAYSTACK_SECRET_KEY || PAYSTACK_SECRET_KEY.includes('placeholder')) {
+        return res.json({
+          status: true,
+          message: 'Paystack Secret Key is not configured',
+          data: [],
+        });
+      }
+
       const response = await fetch('https://api.paystack.co/transaction?perPage=50', {
         method: 'GET',
         headers: {
@@ -134,10 +201,36 @@ async function startServer() {
       });
 
       const data = await response.json();
+      if (!data.status) {
+        return res.json({
+          status: true,
+          message: data.message || 'Unable to fetch transactions',
+          data: [],
+        });
+      }
+
       res.json(data);
     } catch (error: any) {
       console.error('Paystack Transactions List Error:', error);
-      res.status(500).json({ status: false, message: error.message || 'Failed to fetch Paystack transactions' });
+      res.json({
+        status: true,
+        message: 'Paystack transaction list offline',
+        data: [],
+      });
+    }
+  });
+
+  // Paystack Webhook Listener Endpoint
+  app.post('/api/paystack/webhook', (req, res) => {
+    try {
+      const event = req.body;
+      if (event && event.event) {
+        console.log(`[Paystack Webhook] Received event: ${event.event}`, event.data?.reference || '');
+      }
+      res.status(200).json({ status: 'success', received: true });
+    } catch (error: any) {
+      console.error('Paystack Webhook Error:', error);
+      res.status(500).json({ status: false, message: 'Webhook processing error' });
     }
   });
 

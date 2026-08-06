@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StoreProvider, useStore } from './context/StoreContext';
 import { Header } from './components/common/Header';
 import { Sidebar } from './components/common/Sidebar';
+import { SubscriptionBanner } from './components/common/SubscriptionBanner';
 import { ToastContainer } from './components/common/ToastContainer';
 import { LoginModal } from './components/auth/LoginModal';
 import { SupabaseModal } from './components/common/SupabaseModal';
@@ -71,6 +72,9 @@ const MainAppContent: React.FC = () => {
 
         {/* Right Workspace Column */}
         <div className="flex-1 flex flex-col min-w-0 bg-brand-50 dark:bg-slate-900/50 h-screen overflow-hidden">
+          {/* Top Free Trial / Subscription Error Banner */}
+          <SubscriptionBanner />
+
           {/* Header Navbar */}
           <Header />
 

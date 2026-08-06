@@ -11,6 +11,7 @@ import {
   LogEntry,
   SystemSettings,
   UserRole,
+  SubscriptionStatus,
 } from '../types';
 import { sounds } from '../utils/audio';
 import { hashPassword, verifyPassword, isHashed } from '../utils/security';
@@ -66,9 +67,10 @@ interface StoreContextType {
   setIsMobileMenuOpen: (open: boolean) => void;
   toggleMobileMenu: () => void;
 
-  // Settings
+  // Settings & Subscription
   settings: SystemSettings;
   updateSettings: (newSettings: Partial<SystemSettings>) => void;
+  subscriptionStatus: SubscriptionStatus;
 
   // Products & Inventory
   products: Product[];
@@ -673,8 +675,54 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
+  // Live Subscription Status
+  const subscriptionStatus: SubscriptionStatus = React.useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonthNum = now.getMonth() + 1;
+    const currentMonthKey = `${currentYear}-${String(currentMonthNum).padStart(2, '0')}`;
+
+    let isPaidForCurrentPeriod = true;
+
+    if (settings.lastPaidMonth) {
+      if (settings.lastPaidMonth === currentMonthKey) {
+        isPaidForCurrentPeriod = true;
+      } else if (settings.lastPaidDate) {
+        const lastPaid = new Date(settings.lastPaidDate);
+        const msSincePayment = now.getTime() - lastPaid.getTime();
+        isPaidForCurrentPeriod = msSincePayment < 30 * 24 * 60 * 60 * 1000;
+      }
+    }
+
+    if (isPaidForCurrentPeriod) {
+      return {
+        isTrialStarted: false,
+        isTrialActive: false,
+        trialDaysLeft: 0,
+        trialEndDate: null,
+        isPaidForCurrentPeriod: true,
+        isBillingError: false,
+        billingErrorMessage: '',
+      };
+    }
+
+    return {
+      isTrialStarted: false,
+      isTrialActive: false,
+      trialDaysLeft: 0,
+      trialEndDate: null,
+      isPaidForCurrentPeriod: false,
+      isBillingError: true,
+      billingErrorMessage: 'Subscription Overdue! Please complete monthly billing payment to restore full system access.',
+    };
+  }, [settings.lastPaidMonth, settings.lastPaidDate]);
+
   // Settings
   const updateSettings = (newSettings: Partial<SystemSettings>) => {
+    if (subscriptionStatus.isBillingError && !newSettings.lastPaidMonth && !newSettings.lastPaidDate) {
+      showToast('Billing Error: Complete monthly billing to update store settings.', 'error');
+      return;
+    }
     const updated = { ...settings, ...newSettings };
     setDoc(doc(db, 'app_config', 'settings'), updated).catch(console.error);
     showToast('Store settings updated', 'success');
@@ -682,6 +730,11 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   // Product Operations
   const addProduct = (productData: Omit<Product, 'id' | 'initialQuantity'>) => {
+    if (subscriptionStatus.isBillingError) {
+      showToast('Billing Error: Complete monthly billing on the Billing page to add products.', 'error');
+      return;
+    }
+
     const id = `PROD_${Date.now().toString(36).toUpperCase()}`;
     const newProduct: Product = {
       ...productData,
@@ -695,6 +748,10 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const updateProduct = (productId: string, updatedData: Partial<Product>) => {
+    if (subscriptionStatus.isBillingError) {
+      showToast('Billing Error: Complete monthly billing on the Billing page to edit products.', 'error');
+      return;
+    }
     const target = products.find((p) => p.id === productId);
     if (target) {
       const updated: Product = {
@@ -709,6 +766,10 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const deleteProduct = (productId: string) => {
+    if (subscriptionStatus.isBillingError) {
+      showToast('Billing Error: Complete monthly billing on the Billing page to delete products.', 'error');
+      return;
+    }
     const target = products.find((p) => p.id === productId);
     if (target) {
       deleteDoc(doc(db, 'products', productId)).catch(console.error);
@@ -718,6 +779,10 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const updateStock = (productId: string, deltaQuantity: number) => {
+    if (subscriptionStatus.isBillingError) {
+      showToast('Billing Error: Complete monthly billing on the Billing page to adjust inventory stock.', 'error');
+      return;
+    }
     const target = products.find((p) => p.id === productId);
     if (target) {
       const newQty = Math.max(0, target.quantityInStock + deltaQuantity);
@@ -821,6 +886,11 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const clearCart = () => setCart([]);
 
   const completeOrder = (customerName: string, customerPhone: string): Order | null => {
+    if (subscriptionStatus.isBillingError) {
+      showToast('Billing Error: Complete monthly billing on the Billing page to checkout sales orders.', 'error');
+      return null;
+    }
+
     if (cart.length === 0) {
       showToast('Cart is empty', 'error');
       return null;
@@ -1064,6 +1134,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
         settings,
         updateSettings,
+        subscriptionStatus,
 
         products,
         categories,
