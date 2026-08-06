@@ -17,6 +17,29 @@ const PAYSTACK_PUBLIC_KEY =
 const PAYSTACK_PLAN_CODE =
   process.env.PAYSTACK_PLAN_CODE || '';
 
+async function safeJsonFetch(url: string, options?: RequestInit) {
+  try {
+    const response = await fetch(url, options);
+    const text = await response.text();
+    let data: any;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = {
+        status: false,
+        message: 'Non-JSON response received from upstream server',
+      };
+    }
+    return { ok: response.ok, status: response.status, data };
+  } catch (error: any) {
+    return {
+      ok: false,
+      status: 500,
+      data: { status: false, message: error.message || 'Network request failed' },
+    };
+  }
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -74,7 +97,7 @@ async function startServer() {
         payload.plan = PAYSTACK_PLAN_CODE;
       }
 
-      let response = await fetch('https://api.paystack.co/transaction/initialize', {
+      let { data } = await safeJsonFetch('https://api.paystack.co/transaction/initialize', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
@@ -83,12 +106,10 @@ async function startServer() {
         body: JSON.stringify(payload),
       });
 
-      let data = await response.json();
-
       // If plan fails (e.g. plan code not found on Paystack account), retry without plan
       if (!data.status && PAYSTACK_PLAN_CODE && data.message?.toLowerCase().includes('plan')) {
         delete payload.plan;
-        response = await fetch('https://api.paystack.co/transaction/initialize', {
+        const retryResult = await safeJsonFetch('https://api.paystack.co/transaction/initialize', {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
@@ -96,7 +117,7 @@ async function startServer() {
           },
           body: JSON.stringify(payload),
         });
-        data = await response.json();
+        data = retryResult.data;
       }
 
       res.json(data);
@@ -123,7 +144,7 @@ async function startServer() {
         });
       }
 
-      const response = await fetch('https://api.paystack.co/charge', {
+      const { data } = await safeJsonFetch('https://api.paystack.co/charge', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
@@ -141,7 +162,6 @@ async function startServer() {
         }),
       });
 
-      const data = await response.json();
       res.json(data);
     } catch (error: any) {
       console.error('Paystack Charge Error:', error);
@@ -164,14 +184,16 @@ async function startServer() {
         });
       }
 
-      const response = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-        },
-      });
+      const { data } = await safeJsonFetch(
+        `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+          },
+        }
+      );
 
-      const data = await response.json();
       res.json(data);
     } catch (error: any) {
       console.error('Paystack Verify Error:', error);
@@ -193,14 +215,13 @@ async function startServer() {
         });
       }
 
-      const response = await fetch('https://api.paystack.co/transaction?perPage=50', {
+      const { data } = await safeJsonFetch('https://api.paystack.co/transaction?perPage=50', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
         },
       });
 
-      const data = await response.json();
       if (!data.status) {
         return res.json({
           status: true,
