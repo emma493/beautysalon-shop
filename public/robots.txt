@@ -6,4 +6,4 @@ Disallow: /worker
 Disallow: /api/
 Allow: /
 
-Sitemap: https://socialfunera.pages.dev/sitemap.xml
+Sitemap: https://beautysalon-shop.netlify.app/sitemap.xml

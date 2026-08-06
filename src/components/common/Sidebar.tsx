@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { useTenant } from '../../context/TenantContext';
 import {
   LayoutDashboard,
   Package,
@@ -15,8 +14,6 @@ import {
   User as UserIcon,
   CreditCard,
   DownloadCloud,
-  Globe,
-  Building2,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -29,8 +26,6 @@ export const Sidebar: React.FC = () => {
     setIsMobileMenuOpen,
     currentUser,
   } = useStore();
-
-  const { openLandingPage, currentTenant } = useTenant();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -175,17 +170,6 @@ export const Sidebar: React.FC = () => {
           );
         })}
       </nav>
-
-      {/* Landing Page & Multi-Tenant Switcher */}
-      <button
-        type="button"
-        onClick={openLandingPage}
-        title={collapsed && !isMobile ? 'Return to Socialfunera Portal Directory' : undefined}
-        className="w-full mt-2 mb-1 p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 hover:bg-brand-600 hover:text-white dark:hover:bg-brand-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition flex items-center gap-2.5 cursor-pointer"
-      >
-        <Globe className="w-4 h-4 text-brand-600 dark:text-emerald-400 group-hover:text-white shrink-0" />
-        {(!collapsed || isMobile) && <span className="truncate">Multi-Tenant Portal Directory</span>}
-      </button>
 
       {/* Signed-in-as footer */}
       {(!isCollapsed || isMobile) && (

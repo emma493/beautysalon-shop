@@ -19,13 +19,17 @@ import {
 import { generateOrderReceiptPDF } from '../../utils/pdfGenerator';
 import { Order } from '../../types';
 import { CustomSelect } from '../common/CustomSelect';
-import { CustomDatePicker } from '../common/CustomDatePicker';
+import { DateRangeFilter, matchesDateFilter, DateFilterValue } from '../common/DateRangeFilter';
 
 export const UserTransactions: React.FC = () => {
   const { orders, settings, currentUser } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
-  const [timePreset, setTimePreset] = useState<'24h' | 'today' | 'custom' | 'all'>('today');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [dateFilter, setDateFilter] = useState<DateFilterValue>({
+    preset: 'all',
+    specificDate: '',
+    startDate: '',
+    endDate: '',
+  });
   const [statusFilter, setStatusFilter] = useState<'all' | 'Completed' | 'Pending' | 'Declined'>('all');
   const [previewOrder, setPreviewOrder] = useState<Order | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,10 +39,6 @@ export const UserTransactions: React.FC = () => {
 
   // Filter orders for this worker
   const myOrders = useMemo(() => {
-    const now = Date.now();
-    const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
-    const todayStr = new Date().toISOString().split('T')[0];
-
     return orders.filter((o) => {
       const isMyOrder = currentUser ? o.workerId === currentUser.id : true;
       const matchesSearch =
@@ -48,29 +48,11 @@ export const UserTransactions: React.FC = () => {
 
       const matchesStatus = statusFilter === 'all' || (statusFilter === 'Completed' ? true : false);
 
-      let matchesTime = true;
-      if (timePreset === '24h') {
-        let t: number | null = null;
-        if (o.createdAt) {
-          const parsed = new Date(o.createdAt).getTime();
-          if (!isNaN(parsed)) t = parsed;
-        }
-        if (!t && o.date) {
-          const parsed = new Date(o.date).getTime();
-          if (!isNaN(parsed)) t = parsed;
-        }
-        matchesTime = t !== null ? t >= twentyFourHoursAgo : true;
-      } else if (timePreset === 'today') {
-        matchesTime = o.date === todayStr || (Boolean(o.createdAt) && o.createdAt.startsWith(todayStr));
-      } else if (timePreset === 'custom') {
-        matchesTime = !selectedDate || o.date === selectedDate || (Boolean(o.createdAt) && o.createdAt.startsWith(selectedDate));
-      } else if (timePreset === 'all') {
-        matchesTime = true;
-      }
+      const matchesTime = matchesDateFilter(o.date || o.createdAt, dateFilter);
 
       return isMyOrder && matchesSearch && matchesStatus && matchesTime;
     });
-  }, [orders, currentUser, searchTerm, timePreset, selectedDate, statusFilter]);
+  }, [orders, currentUser, searchTerm, dateFilter, statusFilter]);
 
   // Metric cards calculations
   const totalTransactionsCount = myOrders.length;
@@ -137,8 +119,8 @@ export const UserTransactions: React.FC = () => {
             <div className="w-10 h-10 rounded-xl bg-brand-600/10 dark:bg-lime-950/60 text-brand-600 dark:text-lime-400 flex items-center justify-center">
               <Receipt className="w-5 h-5" />
             </div>
-            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
-              {timePreset === '24h' ? '24 Hours' : timePreset === 'today' ? 'Today' : timePreset === 'custom' && selectedDate ? selectedDate : 'All Time'}
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md uppercase">
+              {dateFilter.preset === 'all' ? 'All Time' : dateFilter.preset === 'today' ? 'Today' : dateFilter.preset === 'yesterday' ? 'Yesterday' : dateFilter.preset === 'specific' ? dateFilter.specificDate : 'Date Range'}
             </span>
           </div>
           <div className="mt-4">
@@ -155,8 +137,8 @@ export const UserTransactions: React.FC = () => {
             <div className="w-10 h-10 rounded-xl bg-brand-600/10 dark:bg-lime-950/60 text-brand-600 dark:text-lime-400 flex items-center justify-center">
               <CreditCard className="w-5 h-5" />
             </div>
-            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
-              {timePreset === '24h' ? '24 Hours' : timePreset === 'today' ? 'Today' : timePreset === 'custom' && selectedDate ? selectedDate : 'All Time'}
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md uppercase">
+              {dateFilter.preset === 'all' ? 'All Time' : dateFilter.preset === 'today' ? 'Today' : dateFilter.preset === 'yesterday' ? 'Yesterday' : dateFilter.preset === 'specific' ? dateFilter.specificDate : 'Date Range'}
             </span>
           </div>
           <div className="mt-4">
@@ -203,38 +185,14 @@ export const UserTransactions: React.FC = () => {
               )}
             </div>
 
-            {/* Time Preset Selector */}
-            <CustomSelect
-              value={timePreset}
+            {/* Date Range & Presets Filter */}
+            <DateRangeFilter
+              value={dateFilter}
               onChange={(val) => {
-                const preset = val as '24h' | 'today' | 'custom' | 'all';
-                setTimePreset(preset);
-                if (preset !== 'custom') setSelectedDate('');
+                setDateFilter(val);
                 setCurrentPage(1);
               }}
-              options={[
-                { value: '24h', label: 'Last 24 Hours' },
-                { value: 'today', label: 'Today' },
-                { value: 'custom', label: 'Pick Date...' },
-                { value: 'all', label: 'All Time' },
-              ]}
-              icon={<Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
-            />
-
-            {/* Date Picker Feature */}
-            <CustomDatePicker
-              value={selectedDate}
-              onChange={(val) => {
-                setSelectedDate(val);
-                if (val) {
-                  setTimePreset('custom');
-                } else {
-                  setTimePreset('today');
-                }
-                setCurrentPage(1);
-              }}
-              placeholder="Select specific date..."
-              presetType="past"
+              className="w-full sm:w-56"
             />
 
             {/* Status Filter pill */}
@@ -260,19 +218,18 @@ export const UserTransactions: React.FC = () => {
             </div>
             <p className="text-sm font-bold text-slate-700 dark:text-slate-300">No transactions found</p>
             <p className="text-xs text-slate-400">
-              {searchTerm || selectedDate || timePreset !== '24h'
+              {searchTerm || dateFilter.preset !== 'all'
                 ? 'Try adjusting your search or date filter criteria.'
                 : 'Completed POS sales will automatically appear in this record.'}
             </p>
-            {(searchTerm || selectedDate || timePreset !== '24h') && (
+            {(searchTerm || dateFilter.preset !== 'all') && (
               <button
                 onClick={() => {
                   setSearchTerm('');
-                  setSelectedDate('');
-                  setTimePreset('24h');
+                  setDateFilter({ preset: 'all', specificDate: '', startDate: '', endDate: '' });
                   setStatusFilter('all');
                 }}
-                className="px-4 py-2 rounded-xl bg-brand-600/10 text-brand-600 text-xs font-extrabold hover:bg-brand-600 hover:text-white transition"
+                className="px-4 py-2 rounded-xl bg-brand-600/10 text-brand-600 text-xs font-extrabold hover:bg-brand-600 hover:text-white transition cursor-pointer"
               >
                 Clear all filters
               </button>

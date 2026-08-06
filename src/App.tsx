@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { StoreProvider, useStore } from './context/StoreContext';
-import { TenantProvider, useTenant } from './context/TenantContext';
 import { Header } from './components/common/Header';
 import { Sidebar } from './components/common/Sidebar';
 import { ToastContainer } from './components/common/ToastContainer';
 import { LoginModal } from './components/auth/LoginModal';
 import { SupabaseModal } from './components/common/SupabaseModal';
-import { LandingPage } from './components/landing/LandingPage';
 
 // User Portal Components
 import { UserDashboard } from './components/user/UserDashboard';
@@ -23,7 +21,6 @@ import { AdminAddUser } from './components/admin/AdminAddUser';
 import { AdminSettings } from './components/admin/AdminSettings';
 import { AdminBilling } from './components/admin/AdminBilling';
 import { AdminSnapshot } from './components/admin/AdminSnapshot';
-import { SuperAdminDashboard } from './components/superadmin/SuperAdminDashboard';
 
 const MainAppContent: React.FC = () => {
   const {
@@ -34,19 +31,7 @@ const MainAppContent: React.FC = () => {
     currentRoleView,
   } = useStore();
 
-  const { isLandingPage, isSuperAdminView } = useTenant();
-
   const [showSupabaseModal, setShowSupabaseModal] = useState(false);
-
-  // If Super Admin Dashboard view is active
-  if (isSuperAdminView) {
-    return <SuperAdminDashboard />;
-  }
-
-  // If viewing the Landing Page / Multi-Tenant Directory
-  if (isLandingPage) {
-    return <LandingPage />;
-  }
 
   // Normalize currentTab string to view keys
   const getActiveTabKey = (tab: string) => {
@@ -57,8 +42,8 @@ const MainAppContent: React.FC = () => {
     if (clean === 'transactions' || clean === 'transaction') return 'transactions';
     if (clean === 'add-product' || clean === 'add product') return 'add-product';
     if (clean === 'add-user' || clean === 'add user') return 'add-user';
-    if (clean === 'billing' || clean === 'subscription') return 'billing';
-    if (clean === 'snapshot' || clean === 'snapshots' || clean === 'reset') return 'snapshot';
+    if (clean === 'billing' || clean === 'billings') return 'billing';
+    if (clean === 'snapshot' || clean === 'snapshots') return 'snapshot';
     if (clean === 'settings' || clean === 'setting') return 'settings';
     if (clean === 'feedback' || clean === 'feedbacks' || clean === 'send feedback') return 'feedback';
     return clean;
@@ -126,10 +111,8 @@ const MainAppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <TenantProvider>
-      <StoreProvider>
-        <MainAppContent />
-      </StoreProvider>
-    </TenantProvider>
+    <StoreProvider>
+      <MainAppContent />
+    </StoreProvider>
   );
 }

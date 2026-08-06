@@ -91,6 +91,7 @@ interface StoreContextType {
   clearCart: () => void;
   completeOrder: (customerName: string, customerPhone: string) => Order | null;
   orders: Order[];
+  resetTransactions: () => Promise<void>;
 
   // Workers / Users
   workers: UserProfile[];
@@ -900,6 +901,21 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     return newOrder;
   };
 
+  const resetTransactions = async (): Promise<void> => {
+    try {
+      const orderDocs = await getDocs(collection(db, 'orders'));
+      const deletePromises = orderDocs.docs.map((d) => deleteDoc(doc(db, 'orders', d.id)));
+      await Promise.all(deletePromises);
+      setOrders([]);
+      addLog('system', 'Reset transactions database following annual snapshot download.');
+      showToast('Transactions history has been reset successfully.', 'success');
+    } catch (e) {
+      console.error('Failed to clear orders in Firestore:', e);
+      setOrders([]);
+      showToast('Transactions history reset locally.', 'info');
+    }
+  };
+
   // Worker Management Operations
   const generateWorkerId = (firstName: string): string => {
     const cleanFirst = firstName.trim().toUpperCase().replace(/[^A-Z]/g, '') || 'EMP';
@@ -1068,6 +1084,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         clearCart,
         completeOrder,
         orders,
+        resetTransactions,
 
         workers,
         addWorker,

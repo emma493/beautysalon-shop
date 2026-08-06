@@ -1,6 +1,6 @@
 {
-  "name": "Socialfunera Management Systems",
-  "description": "Multi-Tenant Funeral & Social Business Management System with dedicated Firestore databases, company onboarding, billing, offline snapshot exports, and advanced date range filtering.",
+  "name": "Beauty Salon Management System",
+  "description": "Full-featured Beauty Salon Management System for Admins and Workers with sales, inventory, PDF receipts, Supabase integration, and real-time logs.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
