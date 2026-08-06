@@ -23,6 +23,7 @@ import { AdminAddUser } from './components/admin/AdminAddUser';
 import { AdminSettings } from './components/admin/AdminSettings';
 import { AdminBilling } from './components/admin/AdminBilling';
 import { AdminSnapshot } from './components/admin/AdminSnapshot';
+import { SuperAdminDashboard } from './components/superadmin/SuperAdminDashboard';
 
 const MainAppContent: React.FC = () => {
   const {
@@ -33,9 +34,14 @@ const MainAppContent: React.FC = () => {
     currentRoleView,
   } = useStore();
 
-  const { isLandingPage } = useTenant();
+  const { isLandingPage, isSuperAdminView } = useTenant();
 
   const [showSupabaseModal, setShowSupabaseModal] = useState(false);
+
+  // If Super Admin Dashboard view is active
+  if (isSuperAdminView) {
+    return <SuperAdminDashboard />;
+  }
 
   // If viewing the Landing Page / Multi-Tenant Directory
   if (isLandingPage) {

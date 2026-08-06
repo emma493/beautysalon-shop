@@ -15,6 +15,19 @@ export interface Tenant {
   isTrialActive: boolean;
 }
 
+export interface SubscriptionTransaction {
+  id: string;
+  tenantId: string;
+  companyName: string;
+  amount: number;
+  currency: string;
+  billingPeriod: string;
+  date: string;
+  status: 'paid' | 'pending' | 'failed' | 'trial';
+  paymentMethod: string;
+  referenceNumber: string;
+}
+
 export type UserRole = 'admin' | 'worker' | 'user';
 
 export type OnlineStatus = 'online' | 'offline' | string; // e.g., '30 mins ago'

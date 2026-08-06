@@ -41,7 +41,7 @@ const CURRENCY_OPTIONS = [
 ];
 
 export const LandingPage: React.FC = () => {
-  const { tenants, onboardCompany, switchTenant, getTenantUrl } = useTenant();
+  const { tenants, onboardCompany, switchTenant, getTenantUrl, setIsSuperAdminView } = useTenant();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -156,6 +156,14 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsSuperAdminView(true)}
+              className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs border border-slate-800 transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span className="hidden sm:inline">Super Admin</span>
+            </button>
+
             <button
               onClick={handleOpenForm}
               className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-extrabold text-xs shadow-lg shadow-brand-600/25 transition-all transform hover:scale-[1.02] cursor-pointer flex items-center gap-2"
@@ -361,100 +369,20 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Onboarded Company Portals Directory */}
-      <section id="tenants" className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white">Active Company Portals</h2>
-            <p className="text-xs sm:text-sm text-slate-400 font-medium">
-              Select any company portal below to launch its dedicated management workspace.
-            </p>
-          </div>
 
-          <button
-            onClick={handleOpenForm}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-bold text-xs shadow-md flex items-center gap-2 cursor-pointer shrink-0"
-          >
-            <Sparkles className="w-4 h-4 text-emerald-300" />
-            <span>Onboard New Company</span>
-          </button>
-        </div>
-
-        {tenants.length === 0 ? (
-          /* Empty Directory State */
-          <div className="bg-slate-900/60 rounded-3xl border border-slate-800 p-12 text-center max-w-2xl mx-auto space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto text-slate-400">
-              <Building2 className="w-8 h-8 text-emerald-400" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-lg font-bold text-white">No Company Portals Registered Yet</h3>
-              <p className="text-xs text-slate-400 max-w-md mx-auto">
-                Be the first company to onboard! Provision your custom portal with a 1 month free trial and GH₵200/month plan.
-              </p>
-            </div>
-            <button
-              onClick={handleOpenForm}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white font-extrabold text-xs shadow-lg transition cursor-pointer inline-flex items-center gap-2"
-            >
-              <Sparkles className="w-4 h-4 text-emerald-300" />
-              <span>Onboard Your Company Now</span>
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tenants.map((t) => (
-              <div
-                key={t.id}
-                className="bg-slate-900/80 rounded-2xl border border-slate-800 p-6 flex flex-col justify-between space-y-4 hover:border-brand-500/50 transition group"
-              >
-                <div className="flex items-start gap-4">
-                  <img
-                    src={t.logoUrl}
-                    alt={t.companyName}
-                    className="w-14 h-14 rounded-2xl object-cover border border-slate-700 shadow-md shrink-0 bg-slate-800"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-base font-bold text-white truncate group-hover:text-emerald-400 transition">
-                      {t.companyName}
-                    </h3>
-                    <p className="text-xs text-slate-400 font-mono mt-0.5 truncate">
-                      DB: {t.databaseId}
-                    </p>
-                    <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 text-[10px] font-bold border border-emerald-800/60">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                      <span>Trial Active • {t.currencyCode}</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-1 text-xs text-slate-400 border-t border-slate-800/80 pt-3 font-medium">
-                  <div className="flex items-center gap-2 truncate">
-                    <Phone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span className="truncate">{t.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2 truncate">
-                    <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span className="truncate">{t.address}</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => switchTenant(t.id)}
-                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-brand-600 text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-                >
-                  <span>Launch Dedicated Portal</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-white" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
 
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 py-10 text-center text-xs text-slate-500 space-y-2">
         <p className="font-extrabold text-slate-400">Socialfunera Management Systems</p>
         <p>© 2026 Socialfunera Inc. Multi-Tenant Enterprise Cloudflare & Firestore Platform.</p>
+        <p className="pt-2">
+          <button
+            onClick={() => setIsSuperAdminView(true)}
+            className="text-emerald-400 hover:text-emerald-300 font-bold underline cursor-pointer"
+          >
+            🔒 Socialfunera Super Admin Dashboard Login
+          </button>
+        </p>
       </footer>
 
       {/* ONBOARDING FORM MODAL */}
