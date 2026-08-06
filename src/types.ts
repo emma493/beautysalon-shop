@@ -1,3 +1,20 @@
+export interface Tenant {
+  id: string; // unique slug e.g. "grace-memorials"
+  companyName: string;
+  logoUrl: string;
+  currency: string; // e.g. "$" or "GH₵" or "€" or "£" or "₦"
+  currencyCode: string; // e.g. "USD", "GHS", "EUR", "GBP"
+  phone: string;
+  address: string;
+  email: string;
+  adminPasswordHash: string;
+  databaseId: string; // separate database ID e.g. "sf-db-grace-memorials"
+  createdAt: string; // ISO string
+  trialEndDate: string; // ISO string (30 days from creation)
+  customUrl: string; // e.g. "https://socialfunera.pages.dev/?tenant=grace-memorials"
+  isTrialActive: boolean;
+}
+
 export type UserRole = 'admin' | 'worker' | 'user';
 
 export type OnlineStatus = 'online' | 'offline' | string; // e.g., '30 mins ago'

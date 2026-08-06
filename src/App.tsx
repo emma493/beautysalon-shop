@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { StoreProvider, useStore } from './context/StoreContext';
+import { TenantProvider, useTenant } from './context/TenantContext';
 import { Header } from './components/common/Header';
 import { Sidebar } from './components/common/Sidebar';
 import { ToastContainer } from './components/common/ToastContainer';
 import { LoginModal } from './components/auth/LoginModal';
 import { SupabaseModal } from './components/common/SupabaseModal';
+import { LandingPage } from './components/landing/LandingPage';
 
 // User Portal Components
 import { UserDashboard } from './components/user/UserDashboard';
@@ -19,6 +21,8 @@ import { AdminAddProduct } from './components/admin/AdminAddProduct';
 import { AdminTransactions } from './components/admin/AdminTransactions';
 import { AdminAddUser } from './components/admin/AdminAddUser';
 import { AdminSettings } from './components/admin/AdminSettings';
+import { AdminBilling } from './components/admin/AdminBilling';
+import { AdminSnapshot } from './components/admin/AdminSnapshot';
 
 const MainAppContent: React.FC = () => {
   const {
@@ -29,7 +33,14 @@ const MainAppContent: React.FC = () => {
     currentRoleView,
   } = useStore();
 
+  const { isLandingPage } = useTenant();
+
   const [showSupabaseModal, setShowSupabaseModal] = useState(false);
+
+  // If viewing the Landing Page / Multi-Tenant Directory
+  if (isLandingPage) {
+    return <LandingPage />;
+  }
 
   // Normalize currentTab string to view keys
   const getActiveTabKey = (tab: string) => {
@@ -40,6 +51,8 @@ const MainAppContent: React.FC = () => {
     if (clean === 'transactions' || clean === 'transaction') return 'transactions';
     if (clean === 'add-product' || clean === 'add product') return 'add-product';
     if (clean === 'add-user' || clean === 'add user') return 'add-user';
+    if (clean === 'billing' || clean === 'subscription') return 'billing';
+    if (clean === 'snapshot' || clean === 'snapshots' || clean === 'reset') return 'snapshot';
     if (clean === 'settings' || clean === 'setting') return 'settings';
     if (clean === 'feedback' || clean === 'feedbacks' || clean === 'send feedback') return 'feedback';
     return clean;
@@ -86,6 +99,8 @@ const MainAppContent: React.FC = () => {
                 {activeTabKey === 'add-product' && <AdminAddProduct />}
                 {activeTabKey === 'transactions' && <AdminTransactions />}
                 {activeTabKey === 'add-user' && <AdminAddUser />}
+                {activeTabKey === 'billing' && <AdminBilling />}
+                {activeTabKey === 'snapshot' && <AdminSnapshot />}
                 {activeTabKey === 'settings' && (
                   <AdminSettings onOpenSupabaseModal={() => setShowSupabaseModal(true)} />
                 )}
@@ -105,8 +120,10 @@ const MainAppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <StoreProvider>
-      <MainAppContent />
-    </StoreProvider>
+    <TenantProvider>
+      <StoreProvider>
+        <MainAppContent />
+      </StoreProvider>
+    </TenantProvider>
   );
 }
